@@ -1,0 +1,21 @@
+* CPTS: Character TTRPG Plain Sheet
+
+- This is an APP to build D&D 5.5e character sheet. All content is in brazilian language.
+
+- App para criação de fichas em D&D 5.5e. Todo o conteúdo dos catálogos (dados sobre classe, perícias etc) está em brasileiro.
+
+
+** State of the art
+- This app is being handcrafted with a very low use of AI writing, so it will take time and is completely unusable by now.
+
+*** Changelog
+
+|---------+------------+------------|
+| commit  | date       | app status |
+|---------+------------+------------|
+| d037035 | 2026-11-26 | not usable |
+|---------+------------+------------|
+  
+
+
+
