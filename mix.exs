@@ -80,6 +80,7 @@ defmodule Ctps.MixProject do
     [
       setup: ["deps.get", "ecto.migrate", "assets.setup", "assets.build"],
       "ecto.migrate": ["ecto.migrate --prefix ctps"],
+      "ecto.migrations": ["ecto.migrations --prefix ctps"],
       "ecto.rollback": ["ecto.rollback --prefix ctps"],
       "ecto.drop": &drop_forbidden/1,
       "drop-ctps": &drop_schema_ctps/1,

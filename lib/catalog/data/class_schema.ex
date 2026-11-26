@@ -3,6 +3,7 @@ defmodule Catalog.Data.ClassSchema do
   import Ecto.Changeset
 
   @schema_prefix "ctps"
+  @primary_key {:slug, :string, autogenerate: false}
 
   typed_schema "classes" do
     field :name, :string
@@ -16,7 +17,7 @@ defmodule Catalog.Data.ClassSchema do
     timestamps(type: :utc_datetime)
   end
 
-  @required ~w(name hit_die main_attrs main_attrs_bin_op saving_throw skill_number init_gold_option)a
+  @required ~w(slug name hit_die main_attrs main_attrs_bin_op saving_throw skill_number init_gold_option)a
 
   @doc false
   def changeset(class, attrs) do

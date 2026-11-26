@@ -52,8 +52,7 @@ defmodule CtpsWeb do
     quote do
       use Phoenix.LiveView
 
-      @type socket :: Phoenix.LiveView.Socket.t()
-      @type rendered :: Phoenix.LiveView.Rendered.t()
+      unquote(live_view_helpers())
 
       unquote(html_helpers())
     end
@@ -62,6 +61,8 @@ defmodule CtpsWeb do
   def live_component do
     quote do
       use Phoenix.LiveComponent
+
+      unquote(live_view_helpers())
 
       unquote(html_helpers())
     end
@@ -105,6 +106,28 @@ defmodule CtpsWeb do
         endpoint: CtpsWeb.Endpoint,
         router: CtpsWeb.Router,
         statics: CtpsWeb.static_paths()
+    end
+  end
+
+  def live_view_helpers do
+    quote do
+      @type socket :: Phoenix.LiveView.Socket.t()
+      @type rendered :: Phoenix.LiveView.Rendered.t()
+
+      @spec assignM(socket(), keyword(Shared.Monad.m(any()))) :: socket()
+      def assignM(socket, pairs) when is_list(pairs) do
+        Enum.reduce(pairs, socket, fn {key, monad}, acc ->
+          assignM(acc, key, monad)
+        end)
+      end
+
+      @spec assignM(socket(), atom(), Shared.Monad.m(any())) :: socket()
+      def assignM(socket, key, {:ok, value}), do: assign(socket, key, value)
+
+      def assignM(socket, _key, error) do
+        errors = socket.assigns[:errorM] || []
+        assign(socket, errorM: [error | errors])
+      end
     end
   end
 

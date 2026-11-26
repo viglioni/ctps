@@ -18,7 +18,7 @@ defmodule CtpsWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    live "/new", NewSheetLive
+    live "/new", LevelOneFormLive
   end
 
   # Other scopes may use custom stacks.

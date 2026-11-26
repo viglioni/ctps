@@ -32,6 +32,22 @@ defmodule CtpsWeb.CoreComponents do
   alias Phoenix.LiveView.JS
 
   @doc """
+  Horizontal separator. Thin, centered, muted.
+
+  ## Examples
+
+      <.hline />
+      <.hline class="my-8" />
+  """
+  attr :class, :string, default: nil
+
+  def hline(assigns) do
+    ~H"""
+    <hr class={["my-6 border-0 h-px bg-base-content/15", @class]} />
+    """
+  end
+
+  @doc """
   Renders flash notices.
 
   ## Examples

@@ -4,7 +4,8 @@ defmodule Ctps.Repo.Migrations.CreateClasses do
   def up do
     execute "CREATE TYPE ctps.bin_op AS ENUM ('or', 'and')"
 
-    create table(:classes) do
+    create table(:classes, primary_key: false) do
+      add :slug, :string, primary_key: true
       add :name, :string, null: false
       add :hit_die, :integer, null: false
       add :main_attrs, {:array, :string}, null: false
@@ -15,8 +16,6 @@ defmodule Ctps.Repo.Migrations.CreateClasses do
 
       timestamps(type: :utc_datetime)
     end
-
-    create unique_index(:classes, [:name])
   end
 
   def down do
