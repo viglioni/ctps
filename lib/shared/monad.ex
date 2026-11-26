@@ -1,10 +1,11 @@
 defmodule Shared.Monad do
+  alias Shared.ErrorM
   ## Generic elixir monad
   @type ok(t) :: {:ok, t}
 
   ## Classic types
-  @type maybe(t) :: {:ok, t} | :error
-  @type either(t, e) :: {:ok, t} | {:error, e}
+  @type maybe(t) :: {:ok, t} | :error | nil
+  @type either(t, e) :: {:ok, t} | {:error, e} | ErrorM.t()
 
   ## Applying functorable types
   @type functor(t, e) :: either(t, e)
@@ -19,7 +20,8 @@ defmodule Shared.Monad do
            when (is_tuple(value) and tuple_size(value) == 2 and
                    (elem(value, 0) == :ok or elem(value, 0) == :error)) or
                   value == :error or
-                  is_list(value)
+                  is_list(value) or
+                  is_struct(value, ErrorM)
 
   defmacro __using__(_opts) do
     quote do
@@ -29,8 +31,18 @@ defmodule Shared.Monad do
   end
 
   ## Either
-  @spec left(e) :: {:error, e} when e: var
-  def left(something), do: {:error, something}
+  @spec left(any(), ErrorM.kind() | nil, any()) :: ErrorM.t()
+  def left(e, kind \\ nil, context \\ nil) do
+    if is_exception(e) do
+      ErrorM.from_exception(e, kind || :exception, context)
+    else
+      ErrorM.new(kind || :unknown, stringify(e), context)
+    end
+  end
+
+  defp stringify(e) when is_binary(e), do: e
+  defp stringify(e), do: inspect(e)
+
   @spec right(t) :: ok(t) when t: var
   def right(something), do: {:ok, something}
 
@@ -53,7 +65,8 @@ defmodule Shared.Monad do
   def fmap(functor, function) when is_list(functor), do: Enum.map(functor, function)
   def fmap({:ok, something}, function), do: something |> function.() |> return()
   def fmap(:error, _fn), do: :error
-  def fmap({:error, err}, _fn), do: left(err)
+  def fmap({:error, _err} = e, _fn), do: e
+  def fmap(%ErrorM{} = e, _fn), do: e
 
   ## Monad
   @spec bind(m(a), (a -> b)) :: m(b) when a: var, b: var

@@ -1,4 +1,5 @@
 defmodule CtpsWeb.LevelOneFormLive do
+  alias Shared.ErrorM
   alias Shared.Data
   alias Catalog.Data.BackgroundSchema
   alias CtpsWeb.Components.SimpleTable
@@ -35,7 +36,7 @@ defmodule CtpsWeb.LevelOneFormLive do
       backgrounds = backgrounds |> Enum.sort_by(& &1.title)
 
       socket
-      |> assign(errorM: [])
+      |> assign(errorM: [ErrorM.new(:not_found, "asdasd")])
       |> assign(form: form)
       |> assign(classes_options: classes_options)
       |> assign(backgrounds: backgrounds)
@@ -79,6 +80,9 @@ defmodule CtpsWeb.LevelOneFormLive do
   def render(assigns) do
     ~H"""
     <div :if={@errorM != []}>
+      <.list :for={%ErrorM{} = error <- @errorM}>
+        <:item title="error">{error.msg}</:item>
+      </.list>
       <.hline />
     </div>
 
