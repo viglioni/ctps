@@ -35,3 +35,8 @@ ctps-*.tar
 npm-debug.log
 /assets/node_modules/
 
+
+# Emacs auto-save/backup files
+\#*\#
+.\#*
+*~
