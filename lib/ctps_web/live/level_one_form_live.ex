@@ -33,7 +33,7 @@ defmodule CtpsWeb.LevelOneFormLive do
       Classes.list()
       |> fmap_compose(fn %ClassSchema{name: name, slug: slug} -> {name, slug} end)
 
-    backgrounds = Backgrounds.list() |> fmap(fn bg_list -> Enum.sort_by(bg_list, & &1.title) end)
+    backgrounds = Backgrounds.list(order_by: :title)
 
     socket
     |> assign(errorM: [])
