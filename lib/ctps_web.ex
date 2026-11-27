@@ -114,6 +114,21 @@ defmodule CtpsWeb do
       @type socket :: Phoenix.LiveView.Socket.t()
       @type rendered :: Phoenix.LiveView.Rendered.t()
 
+      @doc """
+      Monad-aware `assign`.
+
+      Takes a keyword list of `{key, monadic_value}` pairs (or a single
+      `key, monadic_value` pair) and either assigns the unwrapped value on
+      `{:ok, _}` or accumulates the `%Shared.ErrorM{}` under the `:errorM`
+      assign so the view can render it.
+
+      ## Examples
+
+          socket
+          |> assignM(classes: Classes.list(), bgs: Backgrounds.list())
+
+          socket |> assignM(:user, Users.get_one(id))
+      """
       @spec assignM(socket(), keyword(Shared.Monad.m(any()))) :: socket()
       def assignM(socket, pairs) when is_list(pairs) do
         Enum.reduce(pairs, socket, fn {key, monad}, acc ->
@@ -124,7 +139,7 @@ defmodule CtpsWeb do
       @spec assignM(socket(), atom(), Shared.Monad.m(any())) :: socket()
       def assignM(socket, key, {:ok, value}), do: assign(socket, key, value)
 
-      def assignM(socket, _key, error) do
+      def assignM(socket, _key, %Shared.ErrorM{} = error) do
         errors = socket.assigns[:errorM] || []
         assign(socket, errorM: [error | errors])
       end

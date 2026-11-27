@@ -27,24 +27,23 @@ defmodule CtpsWeb.LevelOneFormLive do
 
   @spec mount(any(), any(), socket()) :: M.ok(socket())
   def mount(_params, _session, socket) do
-    with {:ok, classes} <- Classes.list(), {:ok, backgrounds} <- Backgrounds.list() do
-      form = %LevelOneFormSchema{} |> LevelOneFormSchema.changeset(%{}) |> to_form()
+    form = %LevelOneFormSchema{} |> LevelOneFormSchema.changeset(%{}) |> to_form()
 
-      classes_options =
-        classes |> fmap(fn %ClassSchema{name: name, slug: slug} -> {name, slug} end)
+    classes_options =
+      Classes.list()
+      |> fmap_compose(fn %ClassSchema{name: name, slug: slug} -> {name, slug} end)
 
-      backgrounds = backgrounds |> Enum.sort_by(& &1.title)
+    backgrounds = Backgrounds.list() |> fmap(fn bg_list -> Enum.sort_by(bg_list, & &1.title) end)
 
-      socket
-      |> assign(errorM: [ErrorM.new(:not_found, "asdasd")])
-      |> assign(form: form)
-      |> assign(classes_options: classes_options)
-      |> assign(backgrounds: backgrounds)
-      |> assign(background_selected: nil)
-      |> assign(attrs_coins: 27)
-      |> assign(attr_costs: @attr_costs)
-      |> return()
-    end
+    socket
+    |> assign(errorM: [])
+    |> assign(form: form)
+    |> assignM(classes_options: classes_options)
+    |> assignM(backgrounds: backgrounds)
+    |> assign(background_selected: nil)
+    |> assign(attrs_coins: 27)
+    |> assign(attr_costs: @attr_costs)
+    |> return()
   end
 
   def handle_event("validate", %{"level_one_form_schema" => params}, socket) do
@@ -81,7 +80,9 @@ defmodule CtpsWeb.LevelOneFormLive do
     ~H"""
     <div :if={@errorM != []}>
       <.list :for={%ErrorM{} = error <- @errorM}>
-        <:item title="error">{error.msg}</:item>
+        <:item title="⚠️ Erros!! Mande print para a Laura ⚠️">
+          <p>{error.msg} <span>{error.kind}</span></p>
+        </:item>
       </.list>
       <.hline />
     </div>
