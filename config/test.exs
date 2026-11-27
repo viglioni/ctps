@@ -6,10 +6,10 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :ctps, Ctps.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: System.get_env("USER", "laura"),
   hostname: "localhost",
-  database: "ctps_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "laura_db_test#{System.get_env("MIX_TEST_PARTITION")}",
+  migration_default_prefix: "ctps",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
